@@ -1,0 +1,9 @@
+# ponytail: ignore already-generated artifacts and local cache
+
+__pycache__/
+*.py[cod]
+output/
+*.png
+.venv/
+venv/
+.env

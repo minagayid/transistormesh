@@ -1,0 +1,2 @@
+numpy; python_version >= '3.11'
+Pillow; python_version >= '3.11'
