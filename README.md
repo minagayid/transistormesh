@@ -1,48 +1,29 @@
-ponytail: minimal v0.1 to satisfy the prompt — real architecture needs field-specific writeup.
-
 # TransistorMesh
+
+![visualization](https://v3b.fal.media/files/b/0aa0295d/5KZ_amR3ERb5BmqASt-2V_iPkM0QGq.png)
 
 **3D logic-memory fabric with self-describing cubes.**
 
-Built from the prompt structure: `16x16x16` cubes with metadata layer tagging content type, so every stored blob knows what it is.
+- 16³ cubes with metadata plane (Z0) + data planes (Z1–Z15)
+- each cell stores 1 bit; metadata tags stored as 4-bit codes in the metadata plane
+- implemented as a Python software prototype
 
-## Why this exists
+file | role
+--- | ---
+`transistormesh.py` | minimal runnable cube (read, write, metadata tagging)
+`mesh_source/mesh_core.py` | preserved original implementation for comparison
+`requirements.txt` | numpy + Pillow
 
-Conventional storage is a flat word array. Overhead is carried outside the memory: addresses and types in headers, buffers, file formats.
-
-TransistorMesh collapses that representation into the fabric. Local computation, no crossing reads, metadata live on Z0.
-
-## What's implemented here
-
-V0 is a software prototype. The hardware concept stays untouched: real through-silicon vias, TSVs, and heat removal are out of scope. Software model is enough to validate the address/data split and metadata routing.
-
-## Run it
+## Run
 
 ```bash
-pip install -r requirements.txt
-python mesh_demo.py
+git clone https://github.com/minagayid/transistormesh.git
+cd transistormesh
+python transistormesh.py
 ```
 
-Outputs:
-- byte encoding + lookup
-- 3-D cube render (`output/transistormesh.png`)
-- metadata demux
+Demo writes `b"Mesh"` with `image` metadata tag into a fresh cube and reads it back.
 
-## Repo layout
+## Notes
 
-```
-transistormesh/
-├─ README.md
-├─ requirements.txt
-├─ .gitignore
-├─ mesh_source/
-│  └─ mesh_core.py
-└─ output/
-   └─ transistormesh.png
-```
-
-## Then what
-
-- 32x32x32 cubes, then cube hierarchy
-- LEDGER plane in Z0 to chain related elements
-- auto-dispatch compute kernels by metadata tag
+- prefix is 2 bytes (16 bits) for lengths up to `CAPACITY-2`; if you want >32K per cube, expand to `u32` (`_write_u32`, `_read_u32`).
